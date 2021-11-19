@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "axios": "^0.24.0",
+    "commander": "^8.3.0",
+    "puppeteer": "^11.0.0"
+  },
+  "bin": {
+    "baires-tracker": "./bin/baires-tracker"
+  },
+  "name": "baires-tracker",
+  "version": "1.0.0",
+  "description": "A CLI tool to manage BairesDev timetracker",
+  "main": "bin/baires-tracker",
+  "author": "basask",
+  "license": "MIT"
+}

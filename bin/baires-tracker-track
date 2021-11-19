@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const trackerFactory = require('../src/tracker');
+const settings = require('../src/settings');
+const ui = require('../src/ui');
+const { dateParser } = require('../src/parsers');
+
+
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Day to track hours to', dateParser)
+  .option('-t, --time <hours>', 'Time to track')
+  .option('-c, --category <category>', 'Comment to add to time tracker')
+  .option('-s, --subcategory <sub category>', 'Tracker subcategory')
+  .option('-p, --project <project>', 'Traker project')
+  .option('-f, --focalpoint <focal point>', 'Focal point')
+  .option('-n, --notes <notes>', 'Additional notes to add to tracker entry')
+
+
+program.parse(process.argv);
+
+command(program.opts());
+
+async function command(params) {
+  const {
+    date, 
+    time:hours, 
+    category, 
+    subcategory:task, 
+    project, 
+    focalpoint:focalPoint, 
+    notes:comment
+  } = params;
+
+  const { user, password } = settings.get('tracker');
+  const defaults = settings.get('defaults');
+  const entry = { ...defaults }
+  entry.date = date || defaults.date;
+  entry.project = project || defaults.project;
+  entry.hours = hours || defaults.hours;
+  entry.category = category || defaults.category;
+  entry.task = task || defaults.task;
+  entry.focalPoint = focalPoint || defaults.focalPoint;
+  entry.comment = comment || defaults.comment;  
+    
+  const tracker = await trackerFactory({ user, password });
+  ui.showTimeEntry(entry);
+  await tracker.login();
+  await tracker.track(entry);
+  await tracker.logoff();
+}

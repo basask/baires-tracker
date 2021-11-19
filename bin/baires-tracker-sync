@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const apiFactory = require('../src/clockify');
+const trackerFactory = require('../src/tracker');
+const settings = require('../src/settings');
+const ui = require('../src/ui');
+const { dateParser } = require('../src/parsers');
+
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
+  .option('-e, --end <dd/mm/yyyy>', 'Ending date', dateParser);
+
+program.parse(process.argv);
+
+command(program.opts());
+
+async function command({date:startDate, end:endDate}) {
+  endDate = endDate || new Date(startDate.getTime());
+  startDate.setHours(0, 0, 0);
+  endDate.setHours(23, 59, 59);
+
+  const { workspaceId, apiKey } = settings.get('clockify');
+  const { user, password } = settings.get('tracker');
+  const defaults = settings.get('defaults');
+  
+  const api = await apiFactory({ workspaceId, apiKey });
+  const tracker = await trackerFactory({ user, password });
+  const entries = await api.getTimeEntries(startDate, endDate, defaults);
+  
+  await tracker.login();
+  let total = 0.0;
+  for (const entry of entries) {
+    ui.showTimeEntry(entry);
+    await tracker.track(entry);
+    total += entry.hours;
+  }
+  await tracker.logoff();
+  ui.showField('Total', total);
+}

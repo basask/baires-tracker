@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const factory = require('../src/clockify');
+const settings = require('../src/settings');
+const ui = require('../src/ui');
+const { dateParser } = require('../src/parsers');
+
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
+  .option('-e, --end <dd/mm/yyyy>', 'Ending date', dateParser);
+
+program.parse(process.argv);
+
+command(program.opts())
+
+async function command({date, end}) {
+  /**
+   * Lists all time lsited at your connected API.
+   * This will fire a API request to the API to fetch all 
+   * entries within the time range [date, end]
+   * @param  {[DateFormatter]} date [Time range start date] 
+   * @param  {[DateFormatter]} end [Time range end date] 
+   */
+
+  // if no end was provided it will fallback to date
+  end = end || new Date(date.getTime());
+
+  // Set date var to the beginning of the day
+  date.setHours(0, 0, 0);
+
+  // Set end var to end of the day
+  end.setHours(23, 59, 59);
+  
+  const { workspaceId, apiKey } = settings.get('clockify')
+  const defaults = settings.get('defaults');
+  const api = await factory({ workspaceId, apiKey });
+  const entries = await api.getTimeEntries(date, end, defaults);
+  let total = 0.0;
+  for ( entry of entries) {
+    ui.showTimeEntry(entry);
+    total += entry.hours;
+  }
+  ui.showField('Total', total.toFixed(2));
+}
