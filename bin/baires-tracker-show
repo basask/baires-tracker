@@ -5,6 +5,7 @@ const factory = require('../src/clockify');
 const settings = require('../src/settings');
 const ui = require('../src/ui');
 const { dateParser } = require('../src/parsers');
+const { DateFormatter } = require('../src/formaters');
 
 program
   .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
@@ -24,7 +25,7 @@ async function command({date, end}) {
    */
 
   // if no end was provided it will fallback to date
-  end = end || new Date(date.getTime());
+  end = end || new DateFormatter(date.getTime());
 
   // Set date var to the beginning of the day
   date.setHours(0, 0, 0);

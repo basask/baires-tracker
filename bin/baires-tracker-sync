@@ -6,6 +6,7 @@ const trackerFactory = require('../src/tracker');
 const settings = require('../src/settings');
 const ui = require('../src/ui');
 const { dateParser } = require('../src/parsers');
+const { DateFormatter } = require('../src/formaters');
 
 program
   .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
@@ -16,7 +17,7 @@ program.parse(process.argv);
 command(program.opts());
 
 async function command({date:startDate, end:endDate}) {
-  endDate = endDate || new Date(startDate.getTime());
+  endDate = endDate || new DateFormatter(startDate.getTime());
   startDate.setHours(0, 0, 0);
   endDate.setHours(23, 59, 59);
 

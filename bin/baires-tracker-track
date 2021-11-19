@@ -29,7 +29,7 @@ async function command(params) {
     subcategory:task, 
     project, 
     focalpoint:focalPoint, 
-    notes:comment
+    notes:comments
   } = params;
 
   const { user, password } = settings.get('tracker');
@@ -37,11 +37,11 @@ async function command(params) {
   const entry = { ...defaults }
   entry.date = date || defaults.date;
   entry.project = project || defaults.project;
-  entry.hours = hours || defaults.hours;
+  entry.hours = parseFloat(hours || defaults.hours);
   entry.category = category || defaults.category;
   entry.task = task || defaults.task;
   entry.focalPoint = focalPoint || defaults.focalPoint;
-  entry.comment = comment || defaults.comment;  
+  entry.comments = comments || defaults.comments;  
     
   const tracker = await trackerFactory({ user, password });
   ui.showTimeEntry(entry);
