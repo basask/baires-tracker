@@ -1,0 +1,16 @@
+{ 
+    "clockify": {
+        "workspaceId": "<clickify workspace id>", 
+        "apiKey": "<clockfy api key>" 
+    },
+    "tracker": {
+        "user": "<time tracker user>",
+        "password": "<time tracker password>"
+    },
+    "defaults": {
+        "focalPoint": "<Focal point name>",
+        "project": "<Project name>",
+        "category": "<category name>", 
+        "task": "<task name>"
+    }
+}
