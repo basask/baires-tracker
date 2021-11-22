@@ -12,5 +12,10 @@
   "description": "A CLI tool to manage BairesDev timetracker",
   "main": "bin/baires-tracker",
   "author": "basask",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.3.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3"
+  }
 }

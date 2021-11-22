@@ -14,28 +14,30 @@ program
 
 program.parse(process.argv);
 
-command(program.opts());
-
-async function command({date:startDate, end:endDate}) {
-  endDate = endDate || new DateFormatter(startDate.getTime());
+async function command({ date: startDate, end }) {
+  const endDate = end || new DateFormatter(startDate.getTime());
   startDate.setHours(0, 0, 0);
   endDate.setHours(23, 59, 59);
 
   const { workspaceId, apiKey } = settings.get('clockify');
   const { user, password } = settings.get('tracker');
   const defaults = settings.get('defaults');
-  
+
   const api = await apiFactory({ workspaceId, apiKey });
   const tracker = await trackerFactory({ user, password });
   const entries = await api.getTimeEntries(startDate, endDate, defaults);
-  
+
   await tracker.login();
   let total = 0.0;
+  // eslint-disable-next-line no-restricted-syntax
   for (const entry of entries) {
     ui.showTimeEntry(entry);
+    // eslint-disable-next-line no-await-in-loop
     await tracker.track(entry);
     total += entry.hours;
   }
   await tracker.logoff();
   ui.showField('Total', total);
 }
+
+command(program.opts());

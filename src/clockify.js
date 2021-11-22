@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { DateFormatter } = require('./formaters');
+const { showError } = require('./ui');
 
 async function apiFactory(settings) {
   const { workspaceId, apiKey } = settings;
@@ -7,11 +8,11 @@ async function apiFactory(settings) {
     baseURL: `https://reports.api.clockify.me/v1/workspaces/${workspaceId}`,
     headers: {
       'X-Api-Key': apiKey,
-      'content-type': 'application/json'
-    }
+      'content-type': 'application/json',
+    },
   });
 
-  async function getTimeEntries(startDate, endDate, defaults={}) {
+  async function getTimeEntries(startDate, endDate, defaults = {}) {
     let response;
 
     const payload = {
@@ -20,31 +21,39 @@ async function apiFactory(settings) {
       detailedFilter: {
         page: 1,
         pageSize: 50,
-      }
+      },
     };
     try {
       response = await ax.post('/reports/detailed', payload);
     } catch (error) {
-      console.error(error.response.data);
-      return []
+      showError(error.response.data);
+      return [];
     }
-    
-    return response.data.timeentries.map(entry => {
-      const { description:comments, timeInterval, tags, projectName:project } = entry;
+
+    return response.data.timeentries.map((entry) => {
+      const {
+        description: comments,
+        timeInterval,
+        tags,
+        projectName: category,
+        taskName: task,
+      } = entry;
+
       const hours = parseFloat((timeInterval.duration / 3600).toFixed(2));
-      const date = new DateFormatter(timeInterval.start);      
-      const payload = {
+      const date = new DateFormatter(timeInterval.start);
+      const data = {
         date,
-        // project, 
-        hours, 
+        category,
+        task,
+        hours,
         comments,
-        tags: tags.map(t => t.name),
-      }
-      return { ...defaults, ...payload };
+        tags: tags.map((t) => t.name),
+      };
+      return { ...defaults, ...data };
     });
   }
 
-  return { getTimeEntries }
+  return { getTimeEntries };
 }
 
 module.exports = apiFactory;

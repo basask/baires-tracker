@@ -1,12 +1,31 @@
 function showTimeEntry(entry) {
-    let { date, project, hours, comments, task, category, tags } = entry;
-    hours = hours.toFixed(2);
-    tags = tags ? `[${tags}]` : '|';
-    console.log(`${date.toUi()} (${hours}h) ${project} ${tags} ${comments}`);
+  const {
+    date,
+    // project,
+    hours,
+    comments,
+    task,
+    category,
+    // tags,
+  } = entry;
+  const fmtHours = hours.toFixed(2);
+  // const fmtTags = tags ? `[${tags}]` : '|';
+  // eslint-disable-next-line no-console
+  console.log(`${date.toUi()} (${fmtHours}h) ${category}:${task} - ${comments}`);
 }
 
 function showField(name, value) {
-    console.log(`${name}: ${value}`);
+  // eslint-disable-next-line no-console
+  console.log(`${name}: ${value}`);
 }
 
-module.exports = { showTimeEntry, showField };
+function showError(message) {
+  // eslint-disable-next-line no-console
+  console.error(`ERR: ${message}`);
+}
+
+module.exports = {
+  showTimeEntry,
+  showField,
+  showError,
+};

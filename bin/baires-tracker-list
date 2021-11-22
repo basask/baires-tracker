@@ -5,7 +5,6 @@ const settings = require('../src/settings');
 const ui = require('../src/ui');
 const trackerFactory = require('../src/tracker');
 const { dateParser } = require('../src/parsers');
-const { DateFormatter } = require('../src/formaters');
 
 program
   .requiredOption('-d, --date <dd/mm/yyyy>', 'First day', dateParser)
@@ -13,15 +12,13 @@ program
 
 program.parse(process.argv);
 
-command(program.opts())
-
-async function command({date, end}) {
+async function command({ date, end }) {
   /**
    * Lists all time submited to BairesDev time tracker tool.
-   * It will start a headless web browser and scrape the page 
+   * It will start a headless web browser and scrape the page
    * to get all entries on the provided time range [date, end]
-   * @param  {[DateFormatter]} date [Time range start date] 
-   * @param  {[DateFormatter]} end [Time range end date] 
+   * @param  {[DateFormatter]} date [Time range start date]
+   * @param  {[DateFormatter]} end [Time range end date]
    */
 
   const start = date;
@@ -29,12 +26,15 @@ async function command({date, end}) {
   const tracker = await trackerFactory({ user, password });
   await tracker.login();
 
-  const entries = await tracker.list({start, end});
+  const entries = await tracker.list({ start, end });
   let total = 0.0;
-  for ( entry of entries) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const entry of entries) {
     ui.showTimeEntry(entry);
     total += entry.hours;
   }
   ui.showField('Total', total.toFixed(2));
   await tracker.logoff();
 }
+
+command(program.opts());
