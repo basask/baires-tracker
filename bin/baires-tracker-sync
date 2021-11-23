@@ -13,9 +13,9 @@ async function command({ date: startDate, end }) {
   startDate.setHours(0, 0, 0);
   endDate.setHours(23, 59, 59);
 
-  const { workspaceId, apiKey } = settings.get('clockify');
-  const { user, password } = settings.get('tracker');
-  const defaults = settings.get('defaults');
+  const { workspaceId, apiKey } = settings.getApi();
+  const { user, password } = settings.getTimeTracker();
+  const defaults = settings.getDefaults();
 
   const api = await apiFactory({ workspaceId, apiKey });
   const tracker = await trackerFactory({ user, password });

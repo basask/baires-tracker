@@ -17,8 +17,8 @@ async function command({ date, end }) {
   // Set end var to end of the day
   endDate.setHours(23, 59, 59);
 
-  const { workspaceId, apiKey } = settings.get('clockify');
-  const defaults = settings.get('defaults');
+  const defaults = settings.getDefaults();
+  const { workspaceId, apiKey } = settings.getApi();
   const api = await factory({ workspaceId, apiKey });
   const entries = await api.getTimeEntries(date, endDate, defaults);
   let total = 0.0;

@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 const { program } = require('commander');
-const settings = require('../src/settings');
 const ui = require('../src/ui');
+const settings = require('../src/settings');
 const trackerFactory = require('../src/tracker');
 const { dateParser } = require('../src/parsers');
 
 async function command({ date, end }) {
   const start = date;
-  const { user, password } = settings.get('tracker');
+  const { user, password } = settings.getTimeTracker();
   const tracker = await trackerFactory({ user, password });
   await tracker.login();
 

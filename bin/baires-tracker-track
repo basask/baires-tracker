@@ -17,24 +17,20 @@ async function command(params) {
     notes: comments,
   } = params;
 
-  const { user, password } = settings.get('tracker');
-  const defaults = settings.get('defaults');
-  const entry = { ...defaults };
+  const { user, password } = settings.getTimeTracker();
+  const entry = settings.getDefaults();
 
-  entry.date = defaults.date || date;
-  entry.project = defaults.project || project;
-  entry.hours = parseFloat(defaults.hours || hours);
-  entry.category = defaults.category || category;
-  entry.task = defaults.task || task;
-  entry.focalPoint = defaults.focalPoint || focalPoint;
-  entry.comments = defaults.comments || comments;
+  function missingField(field) {
+    throw new InvalidArgumentError(`Missing require parameter: ${field}`);
+  }
 
-  if (!entry.category) throw new InvalidArgumentError('Missing require parameter: category');
-  if (!entry.date) throw new InvalidArgumentError('Missing require parameter: date');
-  if (!entry.focalPoint) throw new InvalidArgumentError('Missing require parameter: focalPoint');
-  if (Number.isNaN(entry.hours)) throw new InvalidArgumentError('Missing require parameter: hours');
-  if (!entry.project) throw new InvalidArgumentError('Missing require parameter: project');
-  if (!entry.task) throw new InvalidArgumentError('Missing require parameter: task');
+  entry.date = date || entry.date || missingField('date');
+  entry.project = project || entry.project || missingField('project');
+  entry.hours = parseFloat(hours || entry.hours) || missingField('hours');
+  entry.category = category || entry.category || missingField('category');
+  entry.task = task || entry.task || missingField('task');
+  entry.focalPoint = focalPoint || entry.focalPoint || missingField('focalPoint');
+  entry.comments = comments || entry.comments || missingField('comment');
 
   const tracker = await trackerFactory({ user, password });
   ui.showTimeEntry(entry);

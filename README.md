@@ -10,27 +10,17 @@ npm install -g baires-tracker
 
 # Configuration
 
-Copy the file `sample-baires-tracker.json` into your home dir as `~/.baires-tracker.json` and fill out all fields in it.
-
-**OR**
-Create a file `~/.baires-tracker.json` with the content below: 
-```
-{ 
-    "clockify": {
-        "workspaceId": "<clickify workspace id>", 
-        "apiKey": "<clockfy api key>" 
-    },
-    "tracker": {
-        "user": "<time tracker user>",
-        "password": "<time tracker password>"
-    },
-    "defaults": {
-        "focalPoint": "<Focal point name>",
-        "project": "<Project name>",
-        "category": "<category name>", 
-        "task": "<task name>"
-    }
-}
+Copy the file `sample-baires-tracker.env` into your home dir as `~/.baires-tracker.env` and fill out all fields in it.
+ 
+```.env
+CLOCKIFY_API_KEY=
+CLOCKIFY_WORKSPACE_ID=
+TT_USER=
+TT_PASSWORD=
+TT_FOCAL_POINT=
+TT_PROJECT=
+TT_CATEGORY=
+TT_TASK=
 ```
 
 Note: If you plan to use only basic CLI tracking (`track` command) you don't need to fill out the clockify section.
@@ -39,7 +29,7 @@ Note: If you plan to use only basic CLI tracking (`track` command) you don't nee
 
 To use the API integration you need to first create a login at [Clockify](https://clockify.me/) and then create an API key at your user [settings](https://clockify.me/user/settings). 
 
-Add your API key to `~/.baires-tracker.json` and the workspace id as well.
+Add your API key to `~/.baires-tracker.env` and the workspace id as well.
 
 You can get your workspace id going to [workspace settings](https://clockify.me/workspaces) and then selecting the settings of the desired workspace. The workspageID is part of the url.
 
@@ -49,17 +39,37 @@ To make clockify integration works smoothly you need to set up your clockify wor
 
 |TimeTracker|Source|Field|
 |-|-|-|
-|Project|config|project|
-|Client Focal Point|config|focalPoint|
+|Project|~/.baires-tracker.env|TT_PROJECT|
+|Client Focal Point|~/.baires-tracker.env|TT_FOCAL_POINT|
 |Task Description|clockify|Project|
 |Task Category|clockify|Task|
 
-TBD: config samples
+To get some more context on how to configure clockify please refer to Clockify documentation:
+- [Managing projects](https://clockify.me/help/projects/managing-projects)
+- [Working with tasks](https://clockify.me/help/projects/working-with-tasks)
 
 # Usage
 
 The basic structure of a command is `baires-tracker <command> [options]`.
 `Command` can be one of the following:
+
+## help
+
+```bash
+$ baires-tracker help
+> Usage: baires-tracker [options] [command]
+>
+> Options:
+>   -V, --version   output the version number
+>   -h, --help      display help for command
+> 
+> Commands:
+>   api             Show entries from your API
+>   list            Show entries already submited to TT
+>   sync            Sync entries from API into TT
+>   track           Manually track time to TT
+>   help [command]  display help for command
+```
 
 ## track
 Manually submit a time entry to the TimeTracker tool.

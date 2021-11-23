@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
 const { program } = require('commander');
+const { homedir } = require('os');
+
+require('dotenv').config({
+  path: `${homedir()}/.baires-tracker.env`
+});
 
 process.env.TZ = 'UTC';
 
