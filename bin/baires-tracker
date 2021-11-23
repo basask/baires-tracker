@@ -6,9 +6,8 @@ process.env.TZ = 'UTC';
 
 program
   .version('0.0.1')
-  .command('show', 'Show entries from your API')
-  .command('list', 'List entries already submited to TT')
+  .command('api', 'Show entries from your API')
+  .command('list', 'Show entries already submited to TT')
   .command('sync', 'Sync entries from API into TT')
-  .command('track', 'Manually track time to TT');
-
-program.parse(process.argv);
+  .command('track', 'Manually track time to TT')
+  .parseAsync(process.argv);

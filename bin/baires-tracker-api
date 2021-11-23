@@ -7,21 +7,7 @@ const ui = require('../src/ui');
 const { dateParser } = require('../src/parsers');
 const { DateFormatter } = require('../src/formaters');
 
-program
-  .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
-  .option('-e, --end <dd/mm/yyyy>', 'Ending date', dateParser);
-
-program.parse(process.argv);
-
 async function command({ date, end }) {
-  /**
-   * Lists all time lsited at your connected API.
-   * This will fire a API request to the API to fetch all
-   * entries within the time range [date, end]
-   * @param  {[DateFormatter]} date [Time range start date]
-   * @param  {[DateFormatter]} end [Time range end date]
-   */
-
   // if no end was provided it will fallback to date
   const endDate = end || new DateFormatter(date.getTime());
 
@@ -44,4 +30,8 @@ async function command({ date, end }) {
   ui.showField('Total', total.toFixed(2));
 }
 
-command(program.opts());
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
+  .option('-e, --end <dd/mm/yyyy>', 'Ending date', dateParser)
+  .action(command)
+  .parseAsync(process.argv);

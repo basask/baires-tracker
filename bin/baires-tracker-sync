@@ -8,12 +8,6 @@ const ui = require('../src/ui');
 const { dateParser } = require('../src/parsers');
 const { DateFormatter } = require('../src/formaters');
 
-program
-  .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
-  .option('-e, --end <dd/mm/yyyy>', 'Ending date', dateParser);
-
-program.parse(process.argv);
-
 async function command({ date: startDate, end }) {
   const endDate = end || new DateFormatter(startDate.getTime());
   startDate.setHours(0, 0, 0);
@@ -40,4 +34,8 @@ async function command({ date: startDate, end }) {
   ui.showField('Total', total);
 }
 
-command(program.opts());
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
+  .option('-e, --end <dd/mm/yyyy>', 'Ending date', dateParser)
+  .action(command)
+  .parseAsync(process.argv);

@@ -6,21 +6,7 @@ const ui = require('../src/ui');
 const trackerFactory = require('../src/tracker');
 const { dateParser } = require('../src/parsers');
 
-program
-  .requiredOption('-d, --date <dd/mm/yyyy>', 'First day', dateParser)
-  .option('-e, --end <dd/mm/yyyy>', 'Last day', dateParser);
-
-program.parse(process.argv);
-
 async function command({ date, end }) {
-  /**
-   * Lists all time submited to BairesDev time tracker tool.
-   * It will start a headless web browser and scrape the page
-   * to get all entries on the provided time range [date, end]
-   * @param  {[DateFormatter]} date [Time range start date]
-   * @param  {[DateFormatter]} end [Time range end date]
-   */
-
   const start = date;
   const { user, password } = settings.get('tracker');
   const tracker = await trackerFactory({ user, password });
@@ -37,4 +23,8 @@ async function command({ date, end }) {
   await tracker.logoff();
 }
 
-command(program.opts());
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'First day', dateParser)
+  .option('-e, --end <dd/mm/yyyy>', 'Last day', dateParser)
+  .action(command)
+  .parseAsync(process.argv);

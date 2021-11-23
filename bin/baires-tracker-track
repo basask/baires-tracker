@@ -1,21 +1,10 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
+const { program, InvalidArgumentError } = require('commander');
 const trackerFactory = require('../src/tracker');
 const settings = require('../src/settings');
 const ui = require('../src/ui');
 const { dateParser } = require('../src/parsers');
-
-program
-  .requiredOption('-d, --date <dd/mm/yyyy>', 'Day to track hours to', dateParser)
-  .option('-t, --time <hours>', 'Time to track')
-  .option('-c, --category <category>', 'Comment to add to time tracker')
-  .option('-s, --subcategory <sub category>', 'Tracker subcategory')
-  .option('-p, --project <project>', 'Traker project')
-  .option('-f, --focalpoint <focal point>', 'Focal point')
-  .option('-n, --notes <notes>', 'Additional notes to add to tracker entry');
-
-program.parse(process.argv);
 
 async function command(params) {
   const {
@@ -32,19 +21,35 @@ async function command(params) {
   const defaults = settings.get('defaults');
   const entry = { ...defaults };
 
-  entry.date = date || defaults.date;
-  entry.project = project || defaults.project;
-  entry.hours = parseFloat(hours || defaults.hours);
-  entry.category = category || defaults.category;
-  entry.task = task || defaults.task;
-  entry.focalPoint = focalPoint || defaults.focalPoint;
-  entry.comments = comments || defaults.comments;
+  entry.date = defaults.date || date;
+  entry.project = defaults.project || project;
+  entry.hours = parseFloat(defaults.hours || hours);
+  entry.category = defaults.category || category;
+  entry.task = defaults.task || task;
+  entry.focalPoint = defaults.focalPoint || focalPoint;
+  entry.comments = defaults.comments || comments;
+
+  if (!entry.category) throw new InvalidArgumentError('Missing require parameter: category');
+  if (!entry.date) throw new InvalidArgumentError('Missing require parameter: date');
+  if (!entry.focalPoint) throw new InvalidArgumentError('Missing require parameter: focalPoint');
+  if (Number.isNaN(entry.hours)) throw new InvalidArgumentError('Missing require parameter: hours');
+  if (!entry.project) throw new InvalidArgumentError('Missing require parameter: project');
+  if (!entry.task) throw new InvalidArgumentError('Missing require parameter: task');
 
   const tracker = await trackerFactory({ user, password });
   ui.showTimeEntry(entry);
   await tracker.login();
   await tracker.track(entry);
-  await tracker.logoff();
+  return tracker.logoff();
 }
 
-command(program.opts());
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Day to track hours to', dateParser)
+  .option('-t, --time <hours>', 'Time to track')
+  .option('-c, --category <category>', 'Comment to add to time tracker')
+  .option('-s, --subcategory <sub category>', 'Tracker subcategory')
+  .option('-p, --project <project>', 'Traker project')
+  .option('-f, --focalpoint <focal point>', 'Focal point')
+  .option('-n, --notes <notes>', 'Additional notes to add to tracker entry')
+  .action(command)
+  .parseAsync(process.argv);

@@ -29,7 +29,7 @@ async function trackerFactory(settings) {
     focalPoint,
   }) {
     if (browser === null) {
-      return new Error('User login() first');
+      throw new Error('User login() first');
     }
 
     await page.goto(`${BASE_URL}/TimeTrackerAdd.aspx`);
@@ -39,8 +39,10 @@ async function trackerFactory(settings) {
     await page.$eval('#ctl00_ContentPlaceHolder_txtFrom', (el, value) => { el.value = value; }, date.toTracker());
     // eslint-disable-next-line no-param-reassign
     await page.$eval('#ctl00_ContentPlaceHolder_TiempoTextBox', (el, value) => { el.value = value; }, hours);
-    // eslint-disable-next-line no-param-reassign
-    await page.$eval('#ctl00_ContentPlaceHolder_CommentsTextBox', (el, value) => { el.value = value; }, comments);
+    if (comments !== null) {
+      // eslint-disable-next-line no-param-reassign
+      await page.$eval('#ctl00_ContentPlaceHolder_CommentsTextBox', (el, value) => { el.value = value; }, comments);
+    }
 
     let selectElem = await page.$('#ctl00_ContentPlaceHolder_idProyectoDropDownList');
     await selectElem.type(project);
