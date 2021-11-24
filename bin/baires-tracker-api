@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const factory = require('../src/clockify');
+const settings = require('../src/settings');
+const ui = require('../src/ui');
+const { dateParser } = require('../src/parsers');
+const { DateFormatter } = require('../src/formaters');
+
+async function command({ date, end }) {
+  // if no end was provided it will fallback to date
+  const endDate = end || new DateFormatter(date.getTime());
+
+  // Set date var to the beginning of the day
+  date.setHours(0, 0, 0);
+
+  // Set end var to end of the day
+  endDate.setHours(23, 59, 59);
+
+  const defaults = settings.getDefaults();
+  const { workspaceId, apiKey } = settings.getApi();
+  const api = await factory({ workspaceId, apiKey });
+  const entries = await api.getTimeEntries(date, endDate, defaults);
+  let total = 0.0;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const entry of entries) {
+    ui.showTimeEntry(entry);
+    total += entry.hours;
+  }
+  ui.showField('Total', total.toFixed(2));
+}
+
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Starting date', dateParser)
+  .option('-e, --end <dd/mm/yyyy>', 'Ending date', dateParser)
+  .action(command)
+  .parseAsync(process.argv);

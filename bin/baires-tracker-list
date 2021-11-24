@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const ui = require('../src/ui');
+const settings = require('../src/settings');
+const trackerFactory = require('../src/tracker');
+const { dateParser } = require('../src/parsers');
+
+async function command({ date, end }) {
+  const start = date;
+  const { user, password } = settings.getTimeTracker();
+  const tracker = await trackerFactory({ user, password });
+  await tracker.login();
+
+  const entries = await tracker.list({ start, end });
+  let total = 0.0;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const entry of entries) {
+    ui.showTimeEntry(entry);
+    total += entry.hours;
+  }
+  ui.showField('Total', total.toFixed(2));
+  await tracker.logoff();
+}
+
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'First day', dateParser)
+  .option('-e, --end <dd/mm/yyyy>', 'Last day', dateParser)
+  .action(command)
+  .parseAsync(process.argv);

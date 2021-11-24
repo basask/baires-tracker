@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const { homedir } = require('os');
+const { version } = require('../package.json');
+
+require('dotenv').config({
+  path: `${homedir()}/.baires-tracker.env`,
+});
+
+process.env.TZ = 'UTC';
+
+program
+  .version(version)
+  .command('api', 'Show entries from your API')
+  .command('list', 'Show entries already submited to TT')
+  .command('sync', 'Sync entries from API into TT')
+  .command('track', 'Manually track time to TT')
+  .parseAsync(process.argv);

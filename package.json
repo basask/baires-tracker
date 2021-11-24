@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "axios": "^0.24.0",
+    "commander": "^8.3.0",
+    "dotenv": "^10.0.0",
+    "puppeteer": "^11.0.0"
+  },
+  "bin": {
+    "baires-tracker": "./bin/baires-tracker"
+  },
+  "name": "baires-tracker",
+  "version": "1.0.0",
+  "description": "A CLI tool to manage BairesDev timetracker",
+  "main": "bin/baires-tracker",
+  "author": "basask",
+  "license": "MIT",
+  "homepage": "https://github.com/basask/baires-tracker",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/basask/baires-tracker.git"
+  },
+  "keywords": [
+    "BairesDev",
+    "Baires",
+    "TimeTracker",
+    "Clockify"
+  ],
+  "devDependencies": {
+    "eslint": "^8.3.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3"
+  }
+}

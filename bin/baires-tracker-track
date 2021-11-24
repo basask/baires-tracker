@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+const { program, InvalidArgumentError } = require('commander');
+const trackerFactory = require('../src/tracker');
+const settings = require('../src/settings');
+const ui = require('../src/ui');
+const { dateParser } = require('../src/parsers');
+
+async function command(params) {
+  const {
+    date,
+    time: hours,
+    category,
+    subcategory: task,
+    project,
+    focalpoint: focalPoint,
+    notes: comments,
+  } = params;
+
+  const { user, password } = settings.getTimeTracker();
+  const entry = settings.getDefaults();
+
+  function missingField(field) {
+    throw new InvalidArgumentError(`Missing require parameter: ${field}`);
+  }
+
+  entry.date = date || entry.date || missingField('date');
+  entry.project = project || entry.project || missingField('project');
+  entry.hours = parseFloat(hours || entry.hours) || missingField('hours');
+  entry.category = category || entry.category || missingField('category');
+  entry.task = task || entry.task || missingField('task');
+  entry.focalPoint = focalPoint || entry.focalPoint || missingField('focalPoint');
+  entry.comments = comments || entry.comments || missingField('comment');
+
+  const tracker = await trackerFactory({ user, password });
+  ui.showTimeEntry(entry);
+  await tracker.login();
+  await tracker.track(entry);
+  return tracker.logoff();
+}
+
+program
+  .requiredOption('-d, --date <dd/mm/yyyy>', 'Day to track hours to', dateParser)
+  .option('-t, --time <hours>', 'Time to track')
+  .option('-c, --category <category>', 'Comment to add to time tracker')
+  .option('-s, --subcategory <sub category>', 'Tracker subcategory')
+  .option('-p, --project <project>', 'Traker project')
+  .option('-f, --focalpoint <focal point>', 'Focal point')
+  .option('-n, --notes <notes>', 'Additional notes to add to tracker entry')
+  .action(command)
+  .parseAsync(process.argv);
