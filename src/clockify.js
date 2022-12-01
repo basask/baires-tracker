@@ -47,7 +47,7 @@ async function apiFactory(settings) {
         task,
         hours,
         comments,
-        tags: tags.map((t) => t.name),
+        tags: tags?.map((t) => t.name),
       };
       return { ...defaults, ...data };
     });
